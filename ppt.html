@@ -23,6 +23,13 @@
           <p>前端判断是否为手写作文</p>
         </section>
         <section>
+          <iframe
+            style="width: 100%; height: 100vh; background-color: white"
+            src="/web-handwritten/index.html"
+            frameborder="0"
+          ></iframe>
+        </section>
+        <section>
           <ul style="line-height: 2">
             <li>TensorFlow.js 介绍</li>
             <li>为什么要在客户端做机器学习？</li>
@@ -55,7 +62,10 @@
             <h3>人工智能</h3>
           </section>
           <section>
-            <h3>张量</h3>
+            <h3>张量（Tensor）</h3>
+          </section>
+          <section>
+            <h3>机器学习一般流程</h3>
           </section>
         </section>
         <section>
@@ -68,7 +78,7 @@
           </section>
           <section>
             <h3>手动分类</h3>
-            <img src="./images/data2.webp" alt="" />
+            <img style="width: 50%" src="./images/data2.webp" alt="" />
           </section>
         </section>
         <section>
@@ -76,7 +86,7 @@
             <h2>训练模型</h2>
           </section>
           <section>
-            <h3>按比例分配数据</h3>
+            <h3>划分训练集和验证集</h3>
             <table>
               <tr>
                 <td></td>
@@ -96,15 +106,106 @@
             </table>
           </section>
           <section>
-            <p>不太准</p>
+            <h3>划分训练集和验证集</h3>
+            <pre data-id="code-animation">
+              <code class="hljs python" data-trim data-line-numbers>
+              train_ds = tf.keras.utils.image_dataset_from_directory(
+                  data_dir,
+                  validation_split=0.2,
+                  subset="training",
+                  seed=123,
+                  image_size=(img_height, img_width),
+                  batch_size=batch_size)
+              
+              val_ds = tf.keras.utils.image_dataset_from_directory(
+                  data_dir,
+                  validation_split=0.2,
+                  subset="validation",
+                  seed=123,
+                  image_size=(img_height, img_width),
+                  batch_size=batch_size)
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>创建模型</h3>
+            <pre data-id="code-animation">
+              <code class="hljs python" data-trim data-line-numbers>
+              data_augmentation = tf.keras.Sequential(
+                  [
+                      tf.keras.layers.RandomFlip("horizontal",
+                                                input_shape=(img_height,
+                                                              img_width,
+                                                              3)),
+                      tf.keras.layers.RandomRotation(0.1),
+                      tf.keras.layers.RandomZoom(0.1),
+                  ]
+              )
+
+              model = tf.keras.Sequential([
+                  data_augmentation,
+                  tf.keras.layers.Rescaling(1./255),
+                  tf.keras.layers.Conv2D(16, 3, activation='relu'),
+                  tf.keras.layers.MaxPooling2D(),
+                  tf.keras.layers.Conv2D(32, 3, activation='relu'),
+                  tf.keras.layers.MaxPooling2D(),
+                  tf.keras.layers.Conv2D(64, 3, activation='relu'),
+                  tf.keras.layers.MaxPooling2D(),
+                  tf.keras.layers.Dropout(0.2),
+                  tf.keras.layers.Flatten(),
+                  tf.keras.layers.Dense(128, activation='relu'),
+                  tf.keras.layers.Dense(num_classes)
+              ])
+              
+              model.compile(
+                  optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>跑数据</h3>
+            <pre data-id="code-animation">
+              <code class="hljs python" data-trim data-line-numbers>
+              epochs = 30 
+              history = model.fit(
+                  train_ds,
+                  validation_data=val_ds,
+                  epochs=epochs
+              )
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>不太准</h3>
             <div style="display: flex; gap: 10px">
               <img style="width: 50%" src="./images/train1-res1.webp" alt="" />
               <img style="width: 50%" src="./images/train1-res2.webp" alt="" />
             </div>
           </section>
           <section>
-            <h3>准备数据&自动分类</h3>
+            <h3>再次准备数据</h3>
             <img src="./images/train2-prepare.webp" alt="" />
+          </section>
+          <section>
+            <h3>自动分类</h3>
+            <pre data-id="code-animation">
+              <code class="hljs python" data-trim data-line-numbers>
+              for file_path in data2_dirs:
+                  # ...
+                  img = tf.keras.utils.load_img(
+                      full_file_path, target_size=(img_height, img_width)
+                  )
+                  img_array = tf.keras.utils.img_to_array(img)
+                  img_array = tf.expand_dims(img_array, 0)  # Create a batch
+              
+                  predictions = model(img_array)
+                  classname = class_names[np.argmax(predictions)]
+                  shutil.move(full_file_path, os.path.join(data2_dir, classname, file_path))
+              </code>
+            </pre>
+            <small> 因为准确率太低，目前自动分类的结果基本没帮助 </small>
           </section>
           <section>
             <h3>再次训练</h3>
@@ -190,6 +291,40 @@
         <section>
           <section>
             <h2>使用模型</h2>
+          </section>
+          <section>
+            <h3>Python 中使用</h3>
+            <pre data-id="code-animation">
+              <code class="hljs python" data-trim data-line-numbers>
+              model = tf.saved_model.load(model_dir)
+              # 这里不用 model.predict(img_array)
+              predictions = model(img_array)
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>转为 Web 可用的模型</h3>
+            <pre data-id="code-animation">
+              <code class="hljs bash" data-trim data-line-numbers>
+              tensorflowjs_converter \
+                --input_format=tf_saved_model \
+                model \
+                web_model
+              </code>
+            </pre>
+          </section>
+          <section>
+            <h3>JavaScript 中使用</h3>
+            <pre data-id="code-animation">
+              <code class="hljs js" data-trim data-line-numbers>
+              const model = await tf.loadGraphModel(HANDWRITTEN_MODEL_PATH);
+
+              const img = tf.cast(tf.browser.fromPixels(imgElement), "float32");
+              const batched = img.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
+
+              const predictions = model.predict(batched);
+              </code>
+            </pre>
           </section>
         </section>
         <section>
