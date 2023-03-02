@@ -1,5 +1,7 @@
 model
+/web_model
 data
+data2
 .parcel-cache
 .DS_Store
 

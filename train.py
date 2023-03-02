@@ -28,7 +28,7 @@ img_width = 180
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
-    validation_split=0.2,
+    validation_split=0.3,
     subset="training",
     seed=123,
     image_size=(img_height, img_width),
@@ -36,11 +36,15 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
-    validation_split=0.2,
+    validation_split=0.3,
     subset="validation",
     seed=123,
     image_size=(img_height, img_width),
     batch_size=batch_size)
+
+val_batches = tf.data.experimental.cardinality(val_ds)
+test_ds = val_ds.take((2*val_batches) // 3)
+val_ds = val_ds.skip((2*val_batches) // 3)
 
 class_names = train_ds.class_names
 
@@ -66,14 +70,27 @@ val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
 num_classes = len(class_names)
 
+data_augmentation = tf.keras.Sequential(
+    [
+        tf.keras.layers.RandomFlip("horizontal",
+                                   input_shape=(img_height,
+                                                img_width,
+                                                3)),
+        tf.keras.layers.RandomRotation(0.1),
+        tf.keras.layers.RandomZoom(0.1),
+    ]
+)
+
 model = tf.keras.Sequential([
+    data_augmentation,
     tf.keras.layers.Rescaling(1./255),
-    tf.keras.layers.Conv2D(32, 3, activation='relu'),
+    tf.keras.layers.Conv2D(16, 3, activation='relu'),
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Conv2D(32, 3, activation='relu'),
     tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Conv2D(32, 3, activation='relu'),
+    tf.keras.layers.Conv2D(64, 3, activation='relu'),
     tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation='relu'),
     tf.keras.layers.Dense(num_classes)
@@ -84,13 +101,16 @@ model.compile(
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy'])
 
-epochs = 15
+epochs = 30 
 history = model.fit(
     train_ds,
     validation_data=val_ds,
     epochs=epochs
 )
 
+print("Evaluate on test data")
+results = model.evaluate(test_ds)
+print("test loss, test acc:", results)
 
 # acc = history.history['accuracy']
 # val_acc = history.history['val_accuracy']

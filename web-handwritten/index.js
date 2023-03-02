@@ -105,7 +105,8 @@ async function predict(imgElement) {
  * @param topK The number of top predictions to show.
  */
 export async function getTopKClasses(logits, topK) {
-  const values = await logits.data();
+  const softmaxLogits = tf.softmax(logits);
+  const values = await softmaxLogits.data();
 
   const valuesAndIndices = [];
   for (let i = 0; i < values.length; i++) {
@@ -155,7 +156,7 @@ function showResults(imgElement, classes) {
 
     const probsElement = document.createElement("div");
     probsElement.className = "cell";
-    probsElement.innerText = classes[i].probability.toFixed(3);
+    probsElement.innerText = `${(classes[i].probability * 100).toFixed(1)}%`;
     row.appendChild(probsElement);
 
     probsContainer.appendChild(row);

@@ -1,0 +1,12 @@
+{
+  "name": "zyb-tensorflow-share",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "train": "python3 train.py && sh ./convert.sh && rm -rf web-handwritten/web_model && cp -r ./web_model ./web-handwritten",
+    "classify": "python3 classify.py"
+  },
+  "repository": "https://github.com/zyb-zhangjufeng/zyb-tensorflow-share.git",
+  "author": "zhangjufeng <zhangjufeng@zuoyebang.com>",
+  "license": "MIT"
+}

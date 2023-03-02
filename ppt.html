@@ -70,6 +70,11 @@
             <h3>手动分类</h3>
             <img src="./images/data2.webp" alt="" />
           </section>
+        </section>
+        <section>
+          <section>
+            <h2>训练模型</h2>
+          </section>
           <section>
             <h3>按比例分配数据</h3>
             <table>
@@ -88,17 +93,93 @@
                 <td>49</td>
                 <td>33</td>
               </tr>
-              <tr>
-                <td>测试集</td>
-                <td>0</td>
-                <td>0</td>
-              </tr>
             </table>
           </section>
-        </section>
-        <section>
           <section>
-            <h2>训练模型</h2>
+            <p>不太准</p>
+            <div style="display: flex; gap: 10px">
+              <img style="width: 50%" src="./images/train1-res1.webp" alt="" />
+              <img style="width: 50%" src="./images/train1-res2.webp" alt="" />
+            </div>
+          </section>
+          <section>
+            <h3>准备数据&自动分类</h3>
+            <img src="./images/train2-prepare.webp" alt="" />
+          </section>
+          <section>
+            <h3>再次训练</h3>
+            <table>
+              <tr>
+                <td></td>
+                <td>手写</td>
+                <td>非手写</td>
+              </tr>
+              <tr>
+                <td>训练集</td>
+                <td>230+</td>
+                <td>360+</td>
+              </tr>
+              <tr>
+                <td>验证集</td>
+                <td>60+</td>
+                <td>100+</td>
+              </tr>
+              <tr>
+                <td>测试集</td>
+                <td>30+</td>
+                <td>50+</td>
+              </tr>
+              <tr>
+                <td>总计</td>
+                <td>342</td>
+                <td>520</td>
+              </tr>
+            </table>
+            <p>
+              <small>
+                结果：test loss, test acc: [1.1063129901885986,
+                0.8645833134651184]
+              </small>
+            </p>
+          </section>
+          <section>
+            <h3>使用刚才的模型继续自动分类</h3>
+            <img src="./images/train3-prepare.webp" alt="" />
+          </section>
+          <section>
+            <h3>再次训练</h3>
+            <table>
+              <tr>
+                <td></td>
+                <td>手写</td>
+                <td>非手写</td>
+              </tr>
+              <tr>
+                <td>训练集</td>
+                <td>360+</td>
+                <td>1030+</td>
+              </tr>
+              <tr>
+                <td>验证集</td>
+                <td>100+</td>
+                <td>290+</td>
+              </tr>
+              <tr>
+                <td>测试集</td>
+                <td>50+</td>
+                <td>140+</td>
+              </tr>
+              <tr>
+                <td>总计</td>
+                <td>528</td>
+                <td>1478</td>
+              </tr>
+            </table>
+            <p>
+              <small>
+                结果：test loss, test acc: [0.25132402777671814, 0.9453125]
+              </small>
+            </p>
           </section>
         </section>
         <section>
