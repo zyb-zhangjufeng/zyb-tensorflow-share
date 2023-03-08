@@ -22,13 +22,13 @@ const HANDWRITTEN_MODEL_PATH = "./web_model/model.json";
 const IMAGE_SIZE = 180;
 const TOPK_PREDICTIONS = 2;
 
-const IMAGENET_CLASSES = ["handwritten", "non-handwritten"];
+const IMAGENET_CLASSES = ["手写", "非手写"];
 
 const localImgs = ["cat", "handwritten"];
 
 let handwritten;
 const handwrittenDemo = async () => {
-  status("Loading model...");
+  status("加载模型...");
 
   handwritten = await tf.loadGraphModel(HANDWRITTEN_MODEL_PATH);
 
@@ -61,7 +61,7 @@ const handwrittenDemo = async () => {
  * probabilities of the top K classes.
  */
 async function predict(imgElement) {
-  status("Predicting...");
+  status("预测...");
 
   // The first start time includes the time it takes to extract the image
   // from the HTML and preprocess it, in additon to the predict() call.
@@ -89,10 +89,7 @@ async function predict(imgElement) {
   const classes = await getTopKClasses(logits, TOPK_PREDICTIONS);
   const totalTime1 = performance.now() - startTime1;
   const totalTime2 = performance.now() - startTime2;
-  status(
-    `Done in ${Math.floor(totalTime1)} ms ` +
-      `(not including preprocessing: ${Math.floor(totalTime2)} ms)`
-  );
+  status(`${Math.floor(totalTime1)}ms 完成`);
 
   // Show the classes in the DOM.
   showResults(imgElement, classes);
@@ -139,6 +136,12 @@ export async function getTopKClasses(logits, topK) {
 function showResults(imgElement, classes) {
   const predictionContainer = document.createElement("div");
   predictionContainer.className = "pred-container";
+
+  if (classes[0].className === IMAGENET_CLASSES[0]) {
+    predictionContainer.style.backgroundColor = "lightgreen";
+  } else {
+    predictionContainer.style.backgroundColor = "lightcoral";
+  }
 
   const imgContainer = document.createElement("div");
   imgContainer.appendChild(imgElement);

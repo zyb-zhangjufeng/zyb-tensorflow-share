@@ -18,7 +18,7 @@ limitations under the License.
 <!DOCTYPE html>
 
 <head>
-  <title>TensorFlow.js: 手写作文检测</title>
+  <title>TensorFlow.js：手写作文检测</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="./index.css" />
@@ -33,6 +33,10 @@ limitations under the License.
     display: inline-block;
     margin-right: 20px;
     vertical-align: top;
+  }
+
+  .pred-container img {
+    display: block;
   }
 
   .row {
@@ -51,24 +55,24 @@ limitations under the License.
 <body>
   <div class="tfjs-example-container">
     <section class="title-area">
-      <h1>TensorFlow.js: 手写作文检测</h1>
+      <h1>TensorFlow.js：手写作文检测</h1>
     </section>
 
     <section>
-      <p class="section-head">Description</p>
+      <p class="section-head">描述</p>
       <p>检测图片是手写作文还是其他图片。</p>
     </section>
 
     <section>
-      <p class="section-head">Status</p>
+      <p class="section-head">状态</p>
       <div id="status"></div>
     </section>
 
     <section>
-      <p class="section-head">Model Output</p>
+      <p class="section-head">模型输出</p>
 
       <div id="file-container" style="display: none">
-        Upload an image:
+        上传图片：
         <input type="file" id="files" name="files[]" multiple />
       </div>
 
